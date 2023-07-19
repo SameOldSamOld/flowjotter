@@ -30,3 +30,5 @@ Imports:
     shinythemes,
     stats,
     tidyr
+URL: https://github.com/SameOldSamOld/flowjotter
+BugReports: https://github.com/SameOldSamOld/flowjotter/issues

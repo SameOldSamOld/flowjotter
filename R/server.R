@@ -1,15 +1,15 @@
 
-flowjotterServer <- shinyServer(function(input, output, session) {
+flowjotterServer <- shiny::shinyServer(function(input, output, session) {
 
   # Reactively replace data -------------------------------------------------
 
-  inputData <- reactive({
+  inputData <- shiny::reactive({
 
     # input$file1 will need to be filled with example data initially
     inFile <- input$file1
 
     if (is.null(inFile)) {
-      data <- tibble(
+      data <- dplyr::tibble(
         `Samples`= c("PBS_1.fcs", "PBS_2.fcs", "PBS_3.fcs", "HDM_1.fcs", "HDM_2.fcs", "HDM_3.fcs"),
         `% Example Data` = c(21.8, 17.45, 15, 17.01, 22.99, 21),
         `% TF123+ of total` = c(33.1, 38.2, 41.2, 35.2, 28, 31.9),
@@ -28,9 +28,9 @@ flowjotterServer <- shinyServer(function(input, output, session) {
 
       # Read in all excel data, and apply plotting filters
       sheets <- readxl::excel_sheets(inFile$datapath)
-      data <- read_excel(inFile$datapath, sheet = sheets[1]) %>%
-        dplyr::rename(`Samples` = 1) %>%
-        select(where(~!all(is.na(.x)))) %>%
+      data   <- readxl::read_excel(inFile$datapath, sheet = sheets[1]) |>
+        dplyr::rename(`Samples` = 1) |>
+        dplyr::select(dplyr::where(~!all(is.na(.x)))) |>
         # functionality to remove plots as determined by "plot" row:
         check_plotrow(xs = ., sheet = sheets[1])
 
@@ -43,9 +43,9 @@ flowjotterServer <- shinyServer(function(input, output, session) {
       if (length(sheets) > 1) {
         for (i in 2:length(sheets)) {
 
-          additional_sheet <- read_excel(path = inFile$datapath, sheet = sheets[i]) %>%
-            dplyr::rename(`Samples` = 1) %>%
-            select(where(~!all(is.na(.x)))) %>%
+          additional_sheet <- readxl::read_excel(path = inFile$datapath, sheet = sheets[i]) |>
+            dplyr::rename(`Samples` = 1) |>
+            dplyr::select(dplyr::where(~!all(is.na(.x)))) |>
             check_plotrow(xs = ., sheet = sheets[i])
 
           ## Abbie suggestion: Add `sheet` ID into column name!
@@ -54,7 +54,7 @@ flowjotterServer <- shinyServer(function(input, output, session) {
               colnames(additional_sheet)[2:ncol(additional_sheet)], sheets[i])
           }
 
-          data <- left_join(data, additional_sheet, by = "Samples")
+          data <- dplyr::left_join(data, additional_sheet, by = "Samples")
         }
       }
     }
@@ -65,13 +65,13 @@ flowjotterServer <- shinyServer(function(input, output, session) {
     # Convert all columns bar 'Samples' to numeric ----------------------------
 
     # Clean out all % columns with '%' and whitespace data in it; thanks Hannah!
-    data[,stringr::str_detect(data[1,1:ncol(data)], "%")] <-  as_tibble(
+    data[,stringr::str_detect(data[1,1:ncol(data)], "%")] <- dplyr::as_tibble(
       sapply(
         data[,stringr::str_detect(data[1,1:ncol(data)], "%")],
         function(x) as.numeric(gsub(" ", "", gsub("%", "", x)))))
 
     numeric_cols       <- colnames(data)[!colnames(data) %in% "Samples"]
-    data[numeric_cols] <- as_tibble(sapply(data[numeric_cols], as.numeric))
+    data[numeric_cols] <- dplyr::as_tibble(sapply(data[numeric_cols], as.numeric))
 
     return(data)
   })
@@ -79,9 +79,9 @@ flowjotterServer <- shinyServer(function(input, output, session) {
 
   # Render Images -----------------------------------------------------------
 
-  output$data_to_header_table <- renderDT({
+  output$data_to_header_table <- DT::renderDT({
 
-    table_data <- inputData() %>%
+    table_data <- inputData() |>
       round_df(digits = 2)
 
     # Add new hidden columns that decides if a column is plotted as white or red
@@ -97,7 +97,7 @@ flowjotterServer <- shinyServer(function(input, output, session) {
       table_data[hidden_index] <- substr(actual_index, 0, 1) %in% c("M", "N", "%")
     }
 
-    datatable(
+    DT::datatable(
       table_data,
       options = list(
         scrollX = TRUE,
@@ -107,7 +107,7 @@ flowjotterServer <- shinyServer(function(input, output, session) {
         dom = 'lt',
 
         # Change font & background of header
-        initComplete = JS(
+        initComplete = DT::JS(
           "function(settings, json) {",
           "$(this.api().table().header()).css({'background-color': '#303030', 'color': 'white'});",
           "}"),
@@ -116,25 +116,25 @@ flowjotterServer <- shinyServer(function(input, output, session) {
         columnDefs = list(
           list(
             visible = FALSE,
-            targets = hidden_column_index)))) %>%
+            targets = hidden_column_index)))) |>
 
       # Correct formatting of 'Samples' Column
-      formatStyle(
+      DT::formatStyle(
         columns = 'Samples',
         backgroundColor = '#303030',
-        color = 'white') %>%
+        color = 'white') |>
 
       # Conditional colouring of Columns
-      formatStyle(
+      DT::formatStyle(
         columns = actual_column_data,
         valueColumns = hidden_column_index,
-        backgroundColor = styleEqual(c(0, 1), c('red', '#222222')),
-        color = 'white') %>%
-      return
+        backgroundColor = DT::styleEqual(c(0, 1), c('red', '#222222')),
+        color = 'white')#|>
+      # return()
   })
   # , options = list(scrollX = TRUE, sScrollY = '75vh', scrollCollapse = TRUE), extensions = list("Scroller"))
 
-  output$ggAllPlots <- renderPlot({
+  output$ggAllPlots <- shiny::renderPlot({
 
     # Write all valid columns of PLOT_DATA to ggplot grid ---------------------
 
@@ -149,8 +149,8 @@ flowjotterServer <- shinyServer(function(input, output, session) {
     })
 
     # Factorise `Samples` for plot grouping -----------------------------------
-    ggplotAllData <- ggplotAllData %>%
-      mutate(Samples = factor(gsub("\\_.*", "", Samples)))
+    ggplotAllData <- ggplotAllData |>
+      plyr::mutate(Samples = factor(gsub("\\_.*", "", Samples)))
 
 
     # Plan grid size ----------------------------------------------------------
@@ -164,7 +164,7 @@ flowjotterServer <- shinyServer(function(input, output, session) {
 
     g <- list();
 
-    withProgress(message = 'Building plot', value = 0, {
+    shiny::withProgress(message = 'Building plot', value = 0, {
 
       for (i in 2:ncol(ggplotAllData)) {
 
@@ -172,7 +172,7 @@ flowjotterServer <- shinyServer(function(input, output, session) {
         label          <- colnames(plot_data_temp)[2]
         plot_n         <- i-1
 
-        incProgress( 1 / (ncol(ggplotAllData) + 1), detail = paste("Plotting", label))
+        shiny::incProgress( 1 / (ncol(ggplotAllData) + 1), detail = paste("Plotting", label))
 
         g[[plot_n]] <- create_single_plot(
           tempData        = plot_data_temp,
@@ -191,28 +191,28 @@ flowjotterServer <- shinyServer(function(input, output, session) {
           chosen.theme    = input$ggtheme)
       }
 
-      incProgress( 1 / (ncol(ggplotAllData) + 1), detail = "Compiling Full Image")
+      shiny::incProgress( 1 / (ncol(ggplotAllData) + 1), detail = "Compiling Full Image")
 
-      gg_fin <- ggarrange(
+      gg_fin <- ggpubr::ggarrange(
         plotlist      = g,
         ncol          = n_height,
         nrow          = n_width,
         common.legend = TRUE,
         legend        = chosen_legend) +
-        bgcolor("#262626")
+        ggpubr::bgcolor("#262626")
 
-      incProgress( 1 / (ncol(ggplotAllData) + 1), detail = "Done")
+      shiny::incProgress( 1 / (ncol(ggplotAllData) + 1), detail = "Done")
     })
 
     return(gg_fin)
 
   }, height = 800)#, height = 800*n_width/n_height)
 
-  output$ggSinglePlot <- renderPlot({
+  output$ggSinglePlot <- shiny::renderPlot({
 
     # Write all valid columns of PLOT_DATA to ggplot grid ---------------------
 
-    req(input$choose_graph)
+    shiny::req(input$choose_graph)
 
     ggplotAllData <- clean_input_data(inputData())
     chosen_legend <- input$legend
@@ -221,7 +221,7 @@ flowjotterServer <- shinyServer(function(input, output, session) {
 
    # Generate chosen image ---------------------------------------------------
 
-    plot_data_temp <- dplyr::select(ggplotAllData, c(`Samples`, all_of(selected_plot)))
+    plot_data_temp <- dplyr::select(ggplotAllData, c(`Samples`, dplyr::all_of(selected_plot)))
 
     return(
       create_single_plot(
@@ -239,37 +239,37 @@ flowjotterServer <- shinyServer(function(input, output, session) {
         plot.se.of.mean = input$plot_se_of_the_mean,
         axis.text.x     = as.numeric(input$xlab_angle),
         chosen.theme    = input$ggtheme) +
-        theme(legend.position = input$legend))
+        ggplot2::theme(legend.position = input$legend))
   },
-  width  = reactive(input$fig_width),
-  height = reactive(input$fig_height))
+  width  = shiny::reactive(input$fig_width),
+  height = shiny::reactive(input$fig_height))
 
 
   # UI Elements -------------------------------------------------------------
 
-  output$graphSelectControls <- renderUI ({
+  output$graphSelectControls <- shiny::renderUI ({
 
     choice_names <- colnames(inputData())
     choice_names <- choice_names[2:length(choice_names)]
 
-    tagList(
-      fluidRow(
-        column(
+    htmltools::tagList(
+      shiny::fluidRow(
+        shiny::column(
           width = 6,
-          selectInput(
+          shiny::selectInput(
             inputId  = "choose_graph",
             label    = "Selected Plot",
             choices  = choice_names,
             selected = choice_names[1],
             multiple = FALSE)),
-        column(
+        shiny::column(
           width = 6,
-          downloadButton(
+          shiny::downloadButton(
             outputId = "download_single_image",
             label    = "Download Selected Image"))
       ),
 
-      plotOutput(
+      shiny::plotOutput(
         "ggSinglePlot",
         # height = 950
         width  = (input$fig_width),
@@ -280,7 +280,7 @@ flowjotterServer <- shinyServer(function(input, output, session) {
 
   # Download sections -------------------------------------------------------
 
-  output$download_master_image <- downloadHandler(
+  output$download_master_image <- shiny::downloadHandler(
     filename = function() {
 
       inFile <- input$file1
@@ -331,15 +331,15 @@ flowjotterServer <- shinyServer(function(input, output, session) {
             chosen.theme    = input$ggtheme)
         }
 
-        gg_fin <- ggarrange(
+        gg_fin <- ggpubr::ggarrange(
           plotlist      = g,
           ncol          = n_height,
           nrow          = n_width,
           common.legend = TRUE,
           legend        = input$legend) +
-          bgcolor("#262626")
+          ggpubr::bgcolor("#262626")
 
-        ggsave(
+        ggplot2::ggsave(
           file,
           plot      = gg_fin,
           device    = "pdf",
@@ -351,7 +351,7 @@ flowjotterServer <- shinyServer(function(input, output, session) {
     }
   )
 
-  output$download_single_image <- downloadHandler(
+  output$download_single_image <- shiny::downloadHandler(
     filename = function() {
 
       inFile <- input$file1
@@ -386,7 +386,7 @@ flowjotterServer <- shinyServer(function(input, output, session) {
         axis.text.x     = as.numeric(input$xlab_angle),
         chosen.theme    = input$ggtheme)
 
-      ggsave(
+      ggplot2::ggsave(
         file,
         plot      = g_single,
         device    = "pdf",
@@ -399,7 +399,7 @@ flowjotterServer <- shinyServer(function(input, output, session) {
     }
   )
 
-  output$download_prism <- downloadHandler(
+  output$download_prism <- shiny::downloadHandler(
     filename = function() {
 
       inFile <- input$file1
@@ -444,8 +444,7 @@ flowjotterServer <- shinyServer(function(input, output, session) {
             }
           }
         }
-        # ??dont?? Transpose for replicate rows
-        # potentially an option... people can probably deal tho
+
         if (input$transpose_prism) {
           temp_dat <- t(temp_dat)
         }
@@ -453,7 +452,7 @@ flowjotterServer <- shinyServer(function(input, output, session) {
       }
 
       temp_file <- tempfile()
-      write_pzfx(
+      pzfx::write_pzfx(
         x = prism_list,
         path = temp_file,
         row_names = TRUE
@@ -463,7 +462,7 @@ flowjotterServer <- shinyServer(function(input, output, session) {
     }
   )
 
-  output$download_pptx <- downloadHandler(
+  output$download_pptx <- shiny::downloadHandler(
     filename = function() {
 
       inFile <- input$file1
@@ -483,7 +482,7 @@ flowjotterServer <- shinyServer(function(input, output, session) {
       ggplotAllData <- clean_input_data(inputData())
       g <- list();
 
-      withProgress(
+      shiny::withProgress(
         message = 'Downloading .pptx',
         value = 0,
         min = 0,
@@ -495,7 +494,7 @@ flowjotterServer <- shinyServer(function(input, output, session) {
           label          <- colnames(plot_data_temp)[2]
           plot_n         <- i-1
 
-          incProgress(
+          shiny::incProgress(
             amount = 1,
             message = "Generating Plots",
             detail = label)
@@ -517,13 +516,12 @@ flowjotterServer <- shinyServer(function(input, output, session) {
             chosen.theme    = input$ggtheme)
         }
 
-          incProgress(
+          shiny::incProgress(
             amount = 1,
             message = "Saving Plots to .pptx...",
             detail = "~1 second per image")
 
         g_dml <- purrr::map(g, create_dml)
-
         temp_file <- paste0(tempfile(), ".pptx")
 
         purrr::map(
@@ -536,34 +534,34 @@ flowjotterServer <- shinyServer(function(input, output, session) {
     }
   )
 
-  output$estimated_master_image_download_time <- renderText({
-    inputData() %>%
-      clean_input_data %>%
-      ncol %>%
-      magrittr::divide_by(6) %>%
-      round(digits = 1) %>%
-      paste0("s") %>%
-      return
+  output$estimated_master_image_download_time <- shiny::renderText({
+    inputData() |>
+      clean_input_data() |>
+      ncol() |>
+      magrittr::divide_by(6) |>
+      round(digits = 1) |>
+      paste0("s") #|>
+      # return()
   })
 
-  output$estimated_pptx_format_download_time <- renderText({
-    inputData() %>%
-      clean_input_data %>%
-      ncol %>%
-      magrittr::divide_by(1.8) %>%
-      round(digits = 1) %>%
-      paste0("s") %>%
-      return
+  output$estimated_pptx_format_download_time <- shiny::renderText({
+    inputData() |>
+      clean_input_data() |>
+      ncol() |>
+      magrittr::divide_by(1.8) |>
+      round(digits = 1) |>
+      paste0("s") #|>
+      # return()
   })
 
-  output$estimated_prism_format_download_time <- renderText({
-    inputData() %>%
-      clean_input_data %>%
-      ncol %>%
-      magrittr::divide_by(50) %>%
-      round(digits = 1) %>%
-      paste0("s") %>%
-      return
+  output$estimated_prism_format_download_time <- shiny::renderText({
+    inputData() |>
+      clean_input_data() |>
+      ncol() |>
+      magrittr::divide_by(50) |>
+      round(digits = 1) |>
+      paste0("s") #|>
+      # return()
   })
 
 

@@ -1,12 +1,32 @@
 Package: flowjotter
-Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.9000
+Title: Jotting Flow Cytometry Data Exported from FlowJo
+Version: 1.0.0.9000
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+    person("Sam", "Old", , "siold@malaghan.org.nz", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0003-1245-4459"))
+Description: 
+    This package is designed to be a time-saving tool for researchers working with High Dimensional Flow Cytometry datasets.
+    Flow Jotter is used for quickly jotting flow cytometry data exported from FlowJo to Excel after gating.
+    It reads uploaded tabular .xlsx files with specifically formatted column names to specify Number, Percentage, or MFI plots.
+    It uses a shiny app GUI to visualise and customise plots from data that is uploaded to it.
+    Once plots are customised, multiple plots can be downloaded as large .ppt or .pdf files.
+    Conversion to prism format is also available for researchers who intend to use prism graphing/statistical software. 
+License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
+Imports: 
+    dplyr,
+    DT,
+    ggcyto,
+    ggpubr,
+    officer,
+    plyr,
+    pzfx,
+    RColorBrewer,
+    readxl,
+    rvg,
+    shiny,
+    shinythemes,
+    stats,
+    tidyr

@@ -4,135 +4,129 @@
 # A project started 2nd February 2023 until...? ---------------------------
 
 
-ui <- sidebarLayout(
+ui <- shiny::sidebarLayout(
 
   sidebarPanel(
     width = 4,
 
 
     # Otter Image + File Input
-    img(src = "www/flowj_otter_lightblue_1.4.1.jpg", width = "100%", height = "100%", align = "margin-left"),
-    tags$figcaption(HTML("<em>Flow Jotter v1.4.1</em>"), align = "right", alt = "By my friend Dime :)"),
+    htmltools::img(src = "R/www/flowj_otter_lightblue.jpg", width = "100%", height = "100%", align = "margin-left"),
+    htmltools::tags$figcaption(HTML("<em>Flow Jotter v1.0.0</em>"), align = "right", alt = "By my friend Dime :)"),
 
-    fileInput(
+    shiny::fileInput(
       inputId = "file1",
       label   = "Choose Excel file",
       accept  = c(".xls", ".xlsx")),
-    tags$hr(),
+    htmltools::tags$hr(),
 
 
     # Plotting Options [Menu] -------------------------------------------------
-    h2("Plot Options"),
+    htmltools::h2("Plot Options"),
 
-    fluidRow(
-      column(
+    shiny::fluidRow(
+      shiny::column(
         width = 6,
-        checkboxInput(
+        shiny::checkboxInput(
           inputId = "jitter",
           label = "Jitter",
           value = TRUE)
       ),
-      column(
+      shiny::column(
         width = 6,
-        checkboxInput(
+        shiny::checkboxInput(
           inputId = "jotter",
           label = "Jotter",
           value = TRUE)
       )
     ),
-    fluidRow(
-        # column(
-        #   width = 6,
-        # checkboxInput(
-        #   inputId = "MFI_logscale",
-        #   label = "MFI log scale",
-        #   value = TRUE)
-      column(
+    shiny::fluidRow(
+      shiny::column(
         width = 6,
-        checkboxInput(
+        shiny::checkboxInput(
           inputId = "plot_bar",
           label = "Bar",
           value = FALSE)
       ),
-      column(
+      shiny::column(
         width = 6,
-        checkboxInput(
+        shiny::checkboxInput(
           inputId = "plot_boxplot",
           label = "Boxplot",
           value = FALSE)
       )
     ),
-    fluidRow(
-      column(
+    shiny::fluidRow(
+      shiny::column(
         width = 6,
-        checkboxInput(
+        shiny::checkboxInput(
           inputId = "plot_mean",
           label = "Mean",
           value = FALSE)
         ),
-      column(
+      shiny::column(
         width = 6,
-        checkboxInput(
+        shiny::checkboxInput(
           inputId = "plot_se_of_the_mean",
-          label = "± SE",
+          label = "+/- SE",
           value = FALSE)
       )
     ),
-    fluidRow(
-      column(
+    shiny::fluidRow(
+      shiny::column(
         width = 12,
-        checkboxInput(
+        shiny::checkboxInput(
           inputId = "append_sheet",
           label = "Append Sheet Name",
           value = FALSE))
     ),
-    fluidRow(
-      column(
+    shiny::fluidRow(
+      shiny::column(
         width = 6,
-        numericInput(
+        shiny::numericInput(
           inputId = "fig_width",
           label = "Width px",
           min = 100, max = 2000,
           step = 100, value = 700)
       ),
-      column(
+      shiny::column(
         width = 6,
-        numericInput(
+        shiny::numericInput(
           inputId = "fig_height",
           label = "Height px",
           min = 100, max = 20000,
           step = 100, value = 500))
     ),
-    fluidRow(
-      column(
+    shiny::fluidRow(
+      shiny::column(
         width = 6,
-        numericInput(
+        shiny::numericInput(
           inputId = "font_size",
           label = "Font size",
           min = 6, max = 100,
           step = 2, value = 24)
       ),
-      column(
+      shiny::column(
         width = 6,
-        numericInput(
+        shiny::numericInput(
           inputId = "pt_size",
           label = "Point size",
           min = 0.1, max = 20,
           step = 1, value = 5))
     ),
-    fluidRow(
-      column(
+    shiny::fluidRow(
+      shiny::column(
         width = 6,
-        selectInput(
+        shiny::selectInput(
           inputId = "legend",
           label = "Legend",
           choices = c("top", "bottom", "left", "right", "none"),
           selected = "right",
           multiple = FALSE)
       ),
-      column(
+      shiny::column(
         width = 6,
-        selectInput(
+        shiny::selectInput(
           inputId = "colour_palette_picker",
           label = "Palette",
           choices = c(
@@ -145,19 +139,19 @@ ui <- sidebarLayout(
           selected = "Set1")
       )
     ),
-    fluidRow(
-      column(
+    shiny::fluidRow(
+      shiny::column(
         width = 6,
-        selectInput(
+        shiny::selectInput(
           inputId = "xlab_angle",
           label = "x-axis Angle",
           choices = c(0,30, 45, 90, 270),
           selected = 45,
           multiple = FALSE)
       ),
-      column(
+      shiny::column(
         width = 6,
-        selectInput(
+        shiny::selectInput(
           inputId = "ggtheme",
           label = "Theme",
           choices = c("light", "classic"),
@@ -167,55 +161,55 @@ ui <- sidebarLayout(
     ),
 
     # Line break
-    tags$hr(),
+    htmltools::tags$hr(),
 
 
     # Download Options [Menu] -------------------------------------------------
-    h2("Download Options"),
+    htmltools::h2("Download Options"),
 
-    fluidRow(
-      column(
+    shiny::fluidRow(
+      shiny::column(
         width = 9,
-        downloadButton(
+        shiny::downloadButton(
           outputId = "download_master_image",
           label = "Master Image",
           style = "width:100%;")
       ),
-      column(
+      shiny::column(
         width = 2,
-        textOutput("estimated_master_image_download_time")
+        shiny::textOutput("estimated_master_image_download_time")
       )
     ),
-    fluidRow(
-      column(
+    shiny::fluidRow(
+      shiny::column(
         width = 9,
-        downloadButton(
+        shiny::downloadButton(
           outputId = "download_pptx",
           label = ".pptx format",
           style = "width:100%;")
       ),
-      column(
+      shiny::column(
         width = 2,
-        textOutput("estimated_pptx_format_download_time")
+        shiny::textOutput("estimated_pptx_format_download_time")
       )
     ),
-    fluidRow(
-      column(
+    shiny::fluidRow(
+      shiny::column(
         width = 9,
-        downloadButton(
+        shiny::downloadButton(
           outputId = "download_prism",
           label = "Prism format",
           style = "width:100%;")
       ),
-      column(
+      shiny::column(
         width = 2,
-        textOutput("estimated_prism_format_download_time")
+        shiny::textOutput("estimated_prism_format_download_time")
       )
     ),
-    fluidRow(
-      column(
+    shiny::fluidRow(
+      shiny::column(
         width = 12,
-        checkboxInput(
+        shiny::checkboxInput(
           inputId = "transpose_prism",
           label = "Transpose Prism Output",
           value = FALSE))
@@ -226,72 +220,72 @@ ui <- sidebarLayout(
   # [Main] ------------------------------------------------------------------
   mainPanel(
     width = 8,
-    navbarPage(
+    shiny::navbarPage(
       title = "Flow Jotter",
       fluid = TRUE,
       theme = shinytheme("darkly"),
       windowTitle = "Flow Jotter",
       collapsible = TRUE,
-      footer = HTML("<i>siold@malaghan.org.nz</i>"),
+      footer = htmltools::HTML("<i>siold@malaghan.org.nz</i>"),
 
-      tabPanel(
+      shiny::tabPanel(
         title = "Info Page",
 
-        DTOutput("data_to_header_table"),
+        DT::DTOutput("data_to_header_table"),
 
-        h2("Choosing Graph types"),
-        p("Graph type is decided by the **first character** of the column title"),
-        tags$div(
-          tags$ul(
-            tags$li("% = Percentage Graph"),
-            tags$li("N = Number Graph"),
-            tags$li("M = MFI Plot"),
-            tags$li("Red columns highlight columns not starting with `%/N/M`"),
-            tags$li("Column names must be unique"))),
+        htmltools::h2("Choosing Graph types"),
+        htmltools::p("Graph type is decided by the **first character** of the column title"),
+        htmltools::tags$div(
+          htmltools::tags$ul(
+            htmltools::tags$li("% = Percentage Graph"),
+            htmltools::tags$li("N = Number Graph"),
+            htmltools::tags$li("M = MFI Plot"),
+            htmltools::tags$li("Red columns highlight columns not starting with `%/N/M`"),
+            htmltools::tags$li("Column names must be unique"))),
 
-        h2("Choosing Groups"),
-        tags$div(
-          tags$ul(
-            tags$li("The left-most column ('Samples') dictates groups for samples"),
-            tags$li("Everything before the first underscore becomes grouped"),
-            tags$li("There is no limit on the number of groups"))),
+        htmltools::h2("Choosing Groups"),
+        htmltools::tags$div(
+          htmltools::tags$ul(
+            htmltools::tags$li("The left-most column ('Samples') dictates groups for samples"),
+            htmltools::tags$li("Everything before the first underscore becomes grouped"),
+            htmltools::tags$li("There is no limit on the number of groups"))),
 
-        HTML("<br>"),
-        h2("FAQ"),
+        htmltools::HTML("<br>"),
+        htmltools::h2("FAQ"),
 
-        h3("Why are my images so squished?"),
-        tags$div(
-          tags$ul(
-            tags$li(
-              p("You need to increase the 'Height px' of your image")
+        htmltools::h3("Why are my images so squished?"),
+        htmltools::tags$div(
+          htmltools::tags$ul(
+            htmltools::tags$li(
+              htmltools::p("You need to increase the 'Height px' of your image")
             )
           )
         ),
 
-        h3("Is there an example of how to setup an Excel file?"),
-        tags$div(tags$ul(tags$li(
+        htmltools::h3("Is there an example of how to setup an Excel file?"),
+        htmltools::tags$div(htmltools::tags$ul(htmltools::tags$li(
           a(href="flowjotter_example_data.xlsx",
             "A typical Excel counts layout can be found above or downloaded here",
             download=NA, target="_blank")))),
 
-        h3("Can my excel file contain multiple sheets?"),
-        tags$div(tags$ul(tags$li(
-          h4("Yes:"),
-          tags$ul(tags$li(
-            p("Each sheet must have a consistent and viable column name, group name and data.")))))),
-        tags$div(tags$ul(tags$li(
-          h4("No:"),
-          tags$ul(tags$li(
-            p("If you are changing the groups that are to be plotted in each sheet, it will not work.")
-          ), tags$li(
-            p("Groups must stay the same throughout the excel sheet e.g. HDM vs Nb vs Ca")
-          ), tags$li(
-            p("To perform multiple comparisons e.g. (HDM vs Nb) & (HDM vs Ca) & (Nb vs Ca), you will need to create multiple excel files")
+        htmltools::h3("Can my excel file contain multiple sheets?"),
+        htmltools::tags$div(htmltools::tags$ul(htmltools::tags$li(
+          htmltools::h4("Yes:"),
+          htmltools::tags$ul(htmltools::tags$li(
+            htmltools::p("Each sheet must have a consistent and viable column name, group name and data.")))))),
+        htmltools::tags$div(htmltools::tags$ul(htmltools::tags$li(
+          htmltools::h4("No:"),
+          htmltools::tags$ul(htmltools::tags$li(
+            htmltools::p("If you are changing the groups that are to be plotted in each sheet, it will not work.")
+          ), htmltools::tags$li(
+            htmltools::p("Groups must stay the same throughout the excel sheet e.g. HDM vs Nb vs Ca")
+          ), htmltools::tags$li(
+            htmltools::p("To perform multiple comparisons e.g. (HDM vs Nb) & (HDM vs Ca) & (Nb vs Ca), you will need to create multiple excel files")
           ))))),
 
-        h3("My groups are getting oversplit into multiple groups"),
-        tags$div(tags$ul(tags$li(
-          p("Carefully read the figure legend, there may be a tiny typo")
+        htmltools::h3("My groups are getting oversplit into multiple groups"),
+        htmltools::tags$div(htmltools::tags$ul(htmltools::tags$li(
+          htmltools::p("Carefully read the figure legend, there may be a tiny typo")
         )))
       ),
 
@@ -303,7 +297,7 @@ ui <- sidebarLayout(
       #     height = "1200")
       # ),
 
-      tabPanel(
+      shiny::tabPanel(
         title = "Plot Preview",
         uiOutput("graphSelectControls")
       )

@@ -1,4 +1,3 @@
-# Remove and report columns with duplications/error prone symbols ---------
 clean_columns <- function(pd = NULL) {
   cn <- colnames(pd)
 

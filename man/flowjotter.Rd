@@ -2,12 +2,14 @@
 % Please edit documentation in R/flowjotter.R
 \name{flowjotter}
 \alias{flowjotter}
-\title{Flow Jotter Shiny App}
+\title{Flow Jotter Shiny App Wrapper}
 \usage{
 flowjotter()
 }
 \description{
-Use this wrapper function to run the shiny app in your RStudio Viewer, or favourite browser. No data needs to be provided to flowjotter until the shiny app is live, and data is stored locally on your machine temporarily.
+Use this wrapper function to run the shiny app in your RStudio Viewer, or favourite
+browser. No data needs to be provided to flowjotter until the shiny app is live.
+Uploaded data is stored locally on your machine temporarily.
 }
 \examples{
 \dontrun{flowjotter()}

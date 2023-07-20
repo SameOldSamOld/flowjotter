@@ -36,9 +36,6 @@ create_single_plot <- function(
     )
   )
 
-  print(tempData)
-
-
   # Optional blocks to go behind points -------------------------------------
 
   if (plot.boxplot) {

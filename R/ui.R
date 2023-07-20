@@ -255,7 +255,7 @@ flowjotter_ui <- shiny::sidebarLayout(
         title = "Info Page",
         DT::DTOutput("data_to_header_table"),
         htmltools::h2("Choosing Graph types"),
-        htmltools::p("Graph type is decided by the **first character** of the column title"),
+        htmltools::p("Graph type is decided by the first character of the column title"),
         htmltools::tags$div(
           htmltools::tags$ul(
             htmltools::tags$li("% = Percentage Graph"),

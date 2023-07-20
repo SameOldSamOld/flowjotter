@@ -16,19 +16,22 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 Imports: 
+    bslib,
     dplyr,
     DT,
-    ggcyto,
+    ggplot2,
     ggpubr,
+    htmltools,
+    magrittr,
     officer,
     plyr,
+    purrr,
     pzfx,
     RColorBrewer,
     readxl,
     rvg,
     shiny,
-    shinythemes,
     stats,
-    tidyr
+    stringr
 URL: https://github.com/SameOldSamOld/flowjotter
 BugReports: https://github.com/SameOldSamOld/flowjotter/issues

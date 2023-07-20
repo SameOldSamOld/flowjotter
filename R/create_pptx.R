@@ -3,8 +3,7 @@
 # -------------------------------------------------------------------------
 
 # function to export plot to PowerPoint -----------------------------------
-create_pptx <- function(plot, path, left = 0.5, top = 1, width = 9, height = 4.95){
-
+create_pptx <- function(plot, path, left = 0.5, top = 1, width = 9, height = 4.95) {
   # Create new Power Point file -------------------------------------------
   if (!file.exists(path)) {
     out <- officer::read_pptx()
@@ -23,7 +22,8 @@ create_pptx <- function(plot, path, left = 0.5, top = 1, width = 9, height = 4.9
         width = width,
         height = height,
         left = left,
-        top = top)
+        top = top
+      )
     ) |>
     base::print(target = path)
 }

@@ -2,27 +2,38 @@
 % Please edit documentation in R/check_plotrow.R
 \name{check_plotrow}
 \alias{check_plotrow}
-\title{Keep or Remove Columns Specified by "plot"}
+\title{Keep or Remove Columns}
 \usage{
 check_plotrow(xs = NULL, sheet = NULL)
 }
 \arguments{
-\item{xs}{"tbl_df" "tbl" "data.frame" excel spreadsheet read it from readxl::read_excel() with the first column title being \code{Samples}}
+\item{xs}{"tbl_df" "tbl" "data.frame" format from readxl::read_excel() reading an excel
+spreadsheet}
 
 \item{sheet}{a character string provided by \code{readxl::excel_sheets()} for the excel file xs}
 }
 \value{
 \itemize{
 \item \code{check_plotrow} returns a tabular format similar to xs input \verb{"tbl_df" "tbl" "data.frame"}
-\item it removes the final row xs\link{to_lower("plot"),}
+\item \code{check_plotrow} removes the final row \code{xs[tolower("plot"),]} if it existed, and specified
+columns to not be plotted.
 }
 }
 \description{
-Check if the final row contains optional "plot" filter & apply it if so
+Check if the final row of \code{xs} contains optional "plot" filter, and apply specified filters
+if so. The final row (as labelled "plot" in the "Samples" column) should contains "y" or "n"
+values to dictate if the associated column should be plotted or not.
 }
 \examples{
-data <- readxl::read_excel("www/flowjotter_example_data.xlsx", sheet = "CD4") |>
-  dplyr::rename(`Samples` = 1) |>
-  dplyr::select(dplyr::where(~ !all(is.na(.x)))) |>
-  check_plotrow(xs = ., sheet = "CD4")
+# Load flowjotter's example dataset that is loaded in app by default
+data(flowjotter_example)
+
+# Ensure the first columns is titled "Samples"
+flowjotter_example <- dplyr::rename(flowjotter_example, `Samples` = 1)
+
+# Remove empty columns
+flowjotter_example <- dplyr::select(flowjotter_example, dplyr::where(~ !all(is.na(.x))))
+
+# Use check_plotrow to filter on last row.
+flowjotter_example <- check_plotrow(xs = flowjotter_example, sheet = "CD4")
 }

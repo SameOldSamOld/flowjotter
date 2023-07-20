@@ -1,7 +1,5 @@
-
 # Remove and report columns with duplications/error prone symbols ---------
 clean_columns <- function(pd = NULL) {
-
   cn <- colnames(pd)
 
   # cn <- sub(".*/", "", colnames(pd))
@@ -14,11 +12,11 @@ clean_columns <- function(pd = NULL) {
   #   cat('\n\tColnames with a "/":   ', cn[grep("\\/", cn)], "\n")
   # }
 
-  removed <- c(cn[duplicated(cn)])#, cn[grep("\\/", cn)])
-  if(length(removed) > 0 ) {
+  removed <- c(cn[duplicated(cn)]) # , cn[grep("\\/", cn)])
+  if (length(removed) > 0) {
     cat("\nRemoved columns:   ", removed)
   }
 
-  pd <- pd[,cn[!cn %in% removed]]
+  pd <- pd[, cn[!cn %in% removed]]
   return(pd)
 }

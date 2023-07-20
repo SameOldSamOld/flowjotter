@@ -6,5 +6,5 @@
 #' \dontrun{flowjotter()}
 #' @export
 flowjotter <- function() {
-  shiny::shinyApp(flowjotter_ui, flowjotterServer)
+  shiny::shinyApp(flowjotter_ui, flowjotter_server)
 }

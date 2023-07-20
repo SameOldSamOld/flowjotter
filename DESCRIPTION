@@ -1,6 +1,6 @@
 Package: flowjotter
 Title: Jotting Flow Cytometry Data Exported from FlowJo
-Version: 1.0.0.9000
+Version: 1.0.0.9001
 Authors@R: 
     person("Sam", "Old", , "siold@malaghan.org.nz", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0003-1245-4459"))

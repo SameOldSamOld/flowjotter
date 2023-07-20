@@ -1,4 +1,4 @@
-flowjotterServer <- shiny::shinyServer(function(input, output, session) {
+flowjotter_server <- shiny::shinyServer(function(input, output, session) {
 
   samples_var <- "Samples"
 

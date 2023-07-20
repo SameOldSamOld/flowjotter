@@ -2,14 +2,18 @@
 #'
 #' User Interface for an app for visualising Flow Cytometry data exported from Flowjo
 #' A project started 2nd Februaryr 2023, Sam Old.
+#'
 #' @importFrom bslib bs_theme
 flowjotter_ui <- shiny::sidebarLayout(
   shiny::sidebarPanel(
     width = 4,
 
-
     # Otter Image + File Input
-    htmltools::img(src = "R/www/flowj_otter_lightblue.jpg", width = "100%", height = "100%", align = "margin-left"),
+    htmltools::img(
+      # src = system.file("logos/flowj_otter_lightblue.jpg", package = "flowjotter"),
+      # src = company_logo(),
+      src = "logos/flowj_otter_lightblue.jpg",
+      width = "100%", height = "100%", align = "margin-left"),
     htmltools::tags$figcaption(htmltools::HTML("<em>Flow Jotter v1.0.0</em>"), align = "right", alt = "By my friend Dime :)"),
     shiny::fileInput(
       inputId = "file1",
@@ -282,7 +286,7 @@ flowjotter_ui <- shiny::sidebarLayout(
         htmltools::h3("Is there an example of how to setup an Excel file?"),
         htmltools::tags$div(htmltools::tags$ul(htmltools::tags$li(
           htmltools::a(
-            href = "flowjotter_example_data.xlsx",
+            href = "logos/flowjotter_example_data.xlsx",
             "A typical Excel counts layout can be found above or downloaded here",
             download = NA, target = "_blank"
           )

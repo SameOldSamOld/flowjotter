@@ -7,6 +7,7 @@ flowjotter_server <- shiny::shinyServer(function(input, output, session) {
   inputData <- shiny::reactive({
     # input$file1 will need to be filled with example data initially
     inFile <- input$file1
+    errorC <- ""
 
     if (is.null(inFile)) {
       data <- dplyr::tibble(
@@ -39,17 +40,28 @@ flowjotter_server <- shiny::shinyServer(function(input, output, session) {
       if (length(sheets) > 1) {
         for (i in 2:length(sheets)) {
           additional_sheet <- readxl::read_excel(path = inFile$datapath, sheet = sheets[i])
+          additional_sheet <- dplyr::mutate(additional_sheet, `empty_sheet_fix` = NA)
           additional_sheet <- dplyr::rename(additional_sheet, `Samples` = 1)
-          additional_sheet <- dplyr::select(additional_sheet, dplyr::where(~ !all(is.na(.x))))
-          additional_sheet <- check_plotrow(xs = additional_sheet, sheet = sheets[i])
 
-          ## Abbie suggestion: Add `sheet` ID into column name!
-          if (input$append_sheet) {
-            colnames(additional_sheet)[2:ncol(additional_sheet)] <- paste(
-              colnames(additional_sheet)[2:ncol(additional_sheet)], sheets[i]
-            )
+          samplesA <- gsub("\\_.*", "", data$Samples)
+          samplesB <- gsub("\\_.*", "", additional_sheet$Samples)
+
+          # Check to ensure Samples columns match for new sheets
+          if (identical(samplesA, samplesB)) {
+            additional_sheet <- dplyr::select(additional_sheet, dplyr::where(~ !all(is.na(.x))))
+            additional_sheet <- check_plotrow(xs = additional_sheet, sheet = sheets[i])
+
+            ## Abbie suggestion: Add `sheet` ID into column name!
+            if (input$append_sheet) {
+              colnames(additional_sheet)[2:ncol(additional_sheet)] <- paste(
+                colnames(additional_sheet)[2:ncol(additional_sheet)], sheets[i]
+              )
+            }
+            data <- dplyr::left_join(data, additional_sheet, by = "Samples")
+          } else {
+            print("Warning: Samples did not match between all excel sheets.")
+            errorC <- "WARNING: Samples did not match between all excel sheets."
           }
-          data <- dplyr::left_join(data, additional_sheet, by = "Samples")
         }
       }
     }
@@ -70,14 +82,14 @@ flowjotter_server <- shiny::shinyServer(function(input, output, session) {
     numeric_cols <- colnames(data)[!colnames(data) %in% "Samples"]
     data[numeric_cols] <- dplyr::as_tibble(sapply(data[numeric_cols], as.numeric))
 
-    return(data)
+    return(list(data = data, errorC = errorC))
   })
 
 
   # Render Images -----------------------------------------------------------
 
   output$data_to_header_table <- DT::renderDT({
-    table_data <- inputData() |>
+    table_data <- inputData()[["data"]] |>
       round_df(digits = 2)
 
     # Add new hidden columns that decides if a column is plotted as white or red
@@ -135,97 +147,115 @@ flowjotter_server <- shiny::shinyServer(function(input, output, session) {
   })
   # , options = list(scrollX = TRUE, sScrollY = '75vh', scrollCollapse = TRUE), extensions = list("Scroller"))
 
-  output$ggAllPlots <- shiny::renderPlot(
-    {
-      # Write all valid columns of PLOT_DATA to ggplot grid ---------------------
 
-      chosen_legend <- input$legend
-      ggplotAllData <- inputData()
-
-
-      # Change the data format from character columns to integer ----------------
-
-      ggplotAllData[, -1] <- lapply(ggplotAllData[, -1], function(x) {
-        if (is.character(x)) as.numeric(as.character(x)) else x
-      })
-
-      # Factorise `Samples` for plot grouping -----------------------------------
-      ggplotAllData <- plyr::mutate(
-        ggplotAllData,
-        Samples = factor(gsub("\\_.*", "",  ggplotAllData[[samples_var]])))
-
-
-      # Plan grid size ----------------------------------------------------------
-
-      n_plots <- ncol(ggplotAllData) - 1
-      n_width <- ceiling(sqrt(n_plots))
-      n_height <- ceiling(n_plots / n_width)
-
-
-      # Generating each plot ----------------------------------------------------
-
-      g <- list()
-
-      shiny::withProgress(message = "Building plot", value = 0, {
-        for (i in 2:ncol(ggplotAllData)) {
-          plot_data_temp <- ggplotAllData[, c(1, i)]
-          label <- colnames(plot_data_temp)[2]
-          plot_n <- i - 1
-
-          shiny::incProgress(1 / (ncol(ggplotAllData) + 1), detail = paste("Plotting", label))
-
-          g[[plot_n]] <- create_single_plot(
-            tempData        = plot_data_temp,
-            label           = label,
-            jitter_width    = ifelse(input$jitter, 0.1, 0),
-            jotter          = input$jotter,
-            MFIlogScale     = input$MFI_logscale,
-            colours         = input$colour_palette_picker,
-            font.size       = input$font_size,
-            pt.size         = input$pt_size,
-            plot.boxplot    = input$plot_boxplot,
-            plot.bar        = input$plot_bar,
-            plot.mean       = input$plot_mean,
-            plot.se.of.mean = input$plot_se_of_the_mean,
-            axis.text.x     = as.numeric(input$xlab_angle),
-            chosen.theme    = input$ggtheme
-          )
-        }
-
-        shiny::incProgress(1 / (ncol(ggplotAllData) + 1), detail = "Compiling Full Image")
-
-        gg_fin <- ggpubr::ggarrange(
-          plotlist      = g,
-          ncol          = n_height,
-          nrow          = n_width,
-          common.legend = TRUE,
-          legend        = chosen_legend
-        ) +
-          ggpubr::bgcolor("#262626")
-
-        shiny::incProgress(1 / (ncol(ggplotAllData) + 1), detail = "Done")
-      })
-
-      return(gg_fin)
-    },
-    height = 800
-  ) # , height = 800*n_width/n_height)
+  ## ggAllPlots is no longer called. I did fix it up for error catching though.
+  # output$ggAllPlots <- shiny::renderPlot(
+  #   {
+  #     # Write all valid columns of PLOT_DATA to ggplot grid ---------------------
+  #
+  #     chosen_legend <- input$legend
+  #     input_data    <- inputData()
+  #     ggplotAllData <- input_data[["data"]]
+  #     ggplotErrors  <- input_data[["errorC"]]
+  #     g             <- list()
+  #
+  #
+  #     # Change the data format from character columns to integer ----------------
+  #
+  #     ggplotAllData[, -1] <- lapply(ggplotAllData[, -1], function(x) {
+  #       if (is.character(x)) as.numeric(as.character(x)) else x
+  #     })
+  #
+  #     # Factorise `Samples` for plot grouping -----------------------------------
+  #     ggplotAllData <- plyr::mutate(
+  #       ggplotAllData,
+  #       Samples = factor(gsub("\\_.*", "",  ggplotAllData[[samples_var]])))
+  #
+  #
+  #     # Plan grid size ----------------------------------------------------------
+  #
+  #     n_plots <- ncol(ggplotAllData) - 1
+  #     if (!ggplotErrors == "") {
+  #       n_plots <- n_plots + 1
+  #
+  #       # Create empty plot that shows the error caught
+  #       g[[n_plots]] <- ggplot2::ggplot(
+  #         data.frame(1),
+  #         aes(
+  #           x = 1,
+  #           y = 1,
+  #           label = !!ggplotErrors)) +
+  #         ggplot2::geom_text() +
+  #         ggplot2::theme_void()
+  #     }
+  #     n_width <- ceiling(sqrt(n_plots))
+  #     n_height <- ceiling(n_plots / n_width)
+  #
+  #
+  #     # Generating each plot ----------------------------------------------------
+  #
+  #     shiny::withProgress(message = "Building plot", value = 0, {
+  #       for (i in 2:ncol(ggplotAllData)) {
+  #         plot_data_temp <- ggplotAllData[, c(1, i)]
+  #         label <- colnames(plot_data_temp)[2]
+  #         plot_n <- i - 1
+  #
+  #         shiny::incProgress(1 / (ncol(ggplotAllData) + 1), detail = paste("Plotting", label))
+  #
+  #         g[[plot_n]] <- create_single_plot(
+  #           tempData        = plot_data_temp,
+  #           label           = label,
+  #           jitter_width    = ifelse(input$jitter, 0.1, 0),
+  #           jotter          = input$jotter,
+  #           MFIlogScale     = input$MFI_logscale,
+  #           colours         = input$colour_palette_picker,
+  #           font.size       = input$font_size,
+  #           pt.size         = input$pt_size,
+  #           plot.boxplot    = input$plot_boxplot,
+  #           plot.bar        = input$plot_bar,
+  #           plot.mean       = input$plot_mean,
+  #           plot.se.of.mean = input$plot_se_of_the_mean,
+  #           axis.text.x     = as.numeric(input$xlab_angle),
+  #           chosen.theme    = input$ggtheme
+  #         )
+  #       }
+  #
+  #       shiny::incProgress(1 / (ncol(ggplotAllData) + 1), detail = "Compiling Full Image")
+  #
+  #       gg_fin <- ggpubr::ggarrange(
+  #         plotlist      = g,
+  #         ncol          = n_height,
+  #         nrow          = n_width,
+  #         common.legend = TRUE,
+  #         legend        = chosen_legend
+  #       ) +
+  #         ggpubr::bgcolor("#262626")
+  #
+  #       shiny::incProgress(1 / (ncol(ggplotAllData) + 1), detail = "Done")
+  #     })
+  #
+  #     return(gg_fin)
+  #   },
+  #   height = 800
+  # ) # , height = 800*n_width/n_height)
 
   output$ggSinglePlot <- shiny::renderPlot(
     {
       # Write all valid columns of PLOT_DATA to ggplot grid ---------------------
+      # Does this need to catch errors? Actually... yes! Would be helpful
 
       shiny::req(input$choose_graph)
 
-      ggplotAllData <- clean_input_data(inputData())
+      ggplotAllData <- clean_input_data(inputData()[["data"]])
       chosen_legend <- input$legend
       selected_plot <- input$choose_graph
 
+      shiny::req(selected_plot %in% colnames(ggplotAllData))
 
       # Generate chosen image ---------------------------------------------------
 
       # plot_data_temp <- dplyr::select(ggplotAllData, c(`Samples`, dplyr::all_of(selected_plot)))
-      plot_data_temp <- dplyr::select(ggplotAllData, c(`samples_var`, dplyr::all_of(selected_plot)))
+      plot_data_temp <- dplyr::select(ggplotAllData, c(`samples_var`, !!selected_plot))
 
       return(
         create_single_plot(
@@ -255,7 +285,7 @@ flowjotter_server <- shiny::shinyServer(function(input, output, session) {
   # UI Elements -------------------------------------------------------------
 
   output$graphSelectControls <- shiny::renderUI({
-    choice_names <- colnames(inputData())
+    choice_names <- colnames(inputData()[["data"]])
     choice_names <- choice_names[2:length(choice_names)]
 
     htmltools::tagList(
@@ -284,7 +314,13 @@ flowjotter_server <- shiny::shinyServer(function(input, output, session) {
         width  = (input$fig_width),
         height = (input$fig_height)
       ),
+      ## TESTING VALIDATE ERROR CALLS
+      shiny::textOutput("validate_inputdata")
     )
+  })
+
+  output$validate_inputdata <- shiny::renderText({
+    inputData()[["errorC"]]
   })
 
 
@@ -302,18 +338,16 @@ flowjotter_server <- shiny::shinyServer(function(input, output, session) {
       myfile
     },
     content = function(file) {
-      ggplotAllData <- clean_input_data(inputData())
+      ggplotAllData <- clean_input_data(inputData()[["data"]])
+      g             <- list()
 
       # Plan grid size ----------------------------------------------------------
 
-      # n_plots  <- ncol(ggplotAllData) - 1
-      n_width <- ceiling(sqrt((ncol(ggplotAllData) - 1)))
-      n_height <- ceiling((ncol(ggplotAllData) - 1) / n_width)
-
+      n_plots  <- ncol(ggplotAllData) - 1
+      n_width <- ceiling(sqrt(n_plots))
+      n_height <- ceiling(n_plots / n_width)
 
       # Generating each plot ----------------------------------------------------
-
-      g <- list()
 
       for (i in 2:ncol(ggplotAllData)) {
         plot_data_temp <- ggplotAllData[, c(1, i)]
@@ -378,7 +412,8 @@ flowjotter_server <- shiny::shinyServer(function(input, output, session) {
       myfile
     },
     content = function(file) {
-      ggplotAllData <- clean_input_data(inputData())
+
+      ggplotAllData <- clean_input_data(inputData()[["data"]])
       tempData <- ggplotAllData[, c("Samples", input$choose_graph)]
 
       g_single <- create_single_plot(
@@ -423,7 +458,7 @@ flowjotter_server <- shiny::shinyServer(function(input, output, session) {
       myfile
     },
     content = function(file) {
-      data <- inputData()
+      data <- inputData()[["data"]]
       groups <- gsub("\\_.*", "", data$Samples)
 
       # Correctly format data for prism download ----------------------------
@@ -483,7 +518,7 @@ flowjotter_server <- shiny::shinyServer(function(input, output, session) {
     content = function(file) {
       # Generating each plot ----------------------------------------------------
 
-      ggplotAllData <- clean_input_data(inputData())
+      ggplotAllData <- clean_input_data(inputData()[["data"]])
       g <- list()
 
       shiny::withProgress(
@@ -543,7 +578,7 @@ flowjotter_server <- shiny::shinyServer(function(input, output, session) {
   )
 
   output$estimated_master_image_download_time <- shiny::renderText({
-    inputData() |>
+    inputData()[["data"]] |>
       clean_input_data() |>
       ncol() |>
       magrittr::divide_by(6) |>
@@ -553,7 +588,7 @@ flowjotter_server <- shiny::shinyServer(function(input, output, session) {
   })
 
   output$estimated_pptx_format_download_time <- shiny::renderText({
-    inputData() |>
+    inputData()[["data"]] |>
       clean_input_data() |>
       ncol() |>
       magrittr::divide_by(1.8) |>
@@ -563,7 +598,7 @@ flowjotter_server <- shiny::shinyServer(function(input, output, session) {
   })
 
   output$estimated_prism_format_download_time <- shiny::renderText({
-    inputData() |>
+    inputData()[["data"]] |>
       clean_input_data() |>
       ncol() |>
       magrittr::divide_by(50) |>

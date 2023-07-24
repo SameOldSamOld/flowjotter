@@ -82,11 +82,11 @@ flowjotter_ui <- shiny::sidebarLayout(
     shiny::fluidRow(
       shiny::column(
         width = 12,
-        shiny::checkboxInput(
-          inputId = "append_sheet",
-          label = "Append Sheet Name",
-          value = FALSE
-        )
+        # shiny::checkboxInput(
+        #   inputId = "append_sheet",
+        #   label = "Append Sheet Name in Prism",
+        #   value = FALSE
+        # )
       )
     ),
     shiny::fluidRow(
@@ -188,6 +188,26 @@ flowjotter_ui <- shiny::sidebarLayout(
     htmltools::h2("Download Options"),
     shiny::fluidRow(
       shiny::column(
+        width = 12,
+        shiny::checkboxInput(
+          inputId = "append_sheet",
+          label = "Prism: Append Sheet Name",
+          value = FALSE
+        )
+      )
+    ),
+    shiny::fluidRow(
+      shiny::column(
+        width = 12,
+        shiny::checkboxInput(
+          inputId = "transpose_prism",
+          label = "Prism: Transpose Output",
+          value = FALSE
+        )
+      )
+    ),
+    shiny::fluidRow(
+      shiny::column(
         width = 9,
         shiny::downloadButton(
           outputId = "download_master_image",
@@ -227,16 +247,6 @@ flowjotter_ui <- shiny::sidebarLayout(
         width = 2,
         shiny::textOutput("estimated_prism_format_download_time")
       )
-    ),
-    shiny::fluidRow(
-      shiny::column(
-        width = 12,
-        shiny::checkboxInput(
-          inputId = "transpose_prism",
-          label = "Transpose Prism Output",
-          value = FALSE
-        )
-      )
     )
   ),
 
@@ -254,6 +264,7 @@ flowjotter_ui <- shiny::sidebarLayout(
       shiny::tabPanel(
         title = "Info Page",
         DT::DTOutput("data_to_header_table"),
+        htmltools::HTML("<br>"),
         htmltools::h2("Choosing Graph types"),
         htmltools::p("Graph type is decided by the first character of the column title"),
         htmltools::tags$div(
@@ -275,14 +286,6 @@ flowjotter_ui <- shiny::sidebarLayout(
         ),
         htmltools::HTML("<br>"),
         htmltools::h2("FAQ"),
-        htmltools::h3("Why are my images so squished?"),
-        htmltools::tags$div(
-          htmltools::tags$ul(
-            htmltools::tags$li(
-              htmltools::p("You need to increase the 'Height px' of your image")
-            )
-          )
-        ),
         htmltools::h3("Is there an example of how to setup an Excel file?"),
         htmltools::tags$div(htmltools::tags$ul(htmltools::tags$li(
           htmltools::a(
@@ -306,8 +309,18 @@ flowjotter_ui <- shiny::sidebarLayout(
             htmltools::p("Groups must stay the same throughout the excel sheet e.g. HDM vs Nb vs Ca")
           ), htmltools::tags$li(
             htmltools::p("To perform multiple comparisons e.g. (HDM vs Nb) & (HDM vs Ca) & (Nb vs Ca), you will need to create multiple excel files")
+          ), htmltools::tags$li(
+            htmltools::p("If multiple sheets are encountered, you may reach a warning if not correctly formatted.")
           ))
         ))),
+        htmltools::h3("Why are my images so squished?"),
+        htmltools::tags$div(
+          htmltools::tags$ul(
+            htmltools::tags$li(
+              htmltools::p("You need to increase the 'Height px' of your image")
+            )
+          )
+        ),
         htmltools::h3("My groups are getting oversplit into multiple groups"),
         htmltools::tags$div(htmltools::tags$ul(htmltools::tags$li(
           htmltools::p("Carefully read the figure legend, there may be a tiny typo")

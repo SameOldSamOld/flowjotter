@@ -18,7 +18,6 @@ create_single_plot <- function(
   # shiny::req(!is.null(tempData))
   error_columns <- NULL
 
-
   # Stop ggplot re-ordering Samples -----------------------------------------
   tempData$Samples <- factor(tempData$Samples, levels = unique(tempData$Samples))
 

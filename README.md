@@ -7,7 +7,14 @@
 <!-- badges: end -->
 
 The objective of flowjotter is to be a time-saving tool for researchers
-working with High Dimensional Flow Cytometry datasets.
+working with High Dimensional Flow Cytometry data.
+
+Flowjotter is useful for quick, automated plotting of Cytometry data
+copied from the FlowJo data export table into excel files.
+
+Flowjotter also features extremely fast conversion to .pzfx Prism file
+format for users who would prefer to make their graphs or stats in
+Prism.
 
 ## Installation
 

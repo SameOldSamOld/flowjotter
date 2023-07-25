@@ -16,6 +16,11 @@ Flowjotter also features extremely fast conversion to .pzfx Prism file
 format for users who would prefer to make their graphs or stats in
 Prism.
 
+<figure>
+<img src="inst/logos/flowjotter_app.png" alt="The flowjotter UI" />
+<figcaption aria-hidden="true">The flowjotter UI</figcaption>
+</figure>
+
 ## Installation
 
 You can install the development version of flowjotter from

@@ -24,6 +24,8 @@ Flowjotter is useful for quick, automated plotting of Cytometry data copied from
 
 Flowjotter also features extremely fast conversion to .pzfx Prism file format for users who would prefer to make their graphs or stats in Prism.
 
+![The flowjotter UI](inst/logos/flowjotter_app.png)
+
 ## Installation
 
 You can install the development version of flowjotter from [GitHub](https://github.com/) with:

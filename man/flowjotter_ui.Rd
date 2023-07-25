@@ -12,6 +12,6 @@ flowjotter_ui
 }
 \description{
 User Interface for an app for visualising Flow Cytometry data exported from Flowjo
-A project started 2nd Februaryr 2023, Sam Old.
+A project started 2nd February 2023, Sam Old.
 }
 \keyword{datasets}

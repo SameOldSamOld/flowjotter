@@ -1,9 +1,49 @@
-create_single_plot <- function(
+#' Flowjotter custom plots for Number, Percentage, MFI cytometry plots.
+#'
+#' Generate a single ggplot2 images from a 2 column dataframe. Samples, and
+#'  a second column that will be used as the title of graph, and graph class.
+#'
+#' @param tempData Two column dataframe. First column class factor "Samples", second column
+#'  is the name of the plot with datapoints to be plotted. The first letter of the
+#'  second column will dictate the type of plot. "N" for number, "%" for Percentage,
+#'  "M" for MFI.
+#' @param jitter_width Amount of horizontal jitter for plotted points. From 0 - 1.
+#' @param jotter logical. if TRUE plot should include points
+#' @param colours Any value of "Black & White", or colour palette returned from
+#'  RColorBrewer::display.brewer.all(), such as "Set1", "PuRd", "Pastel2", etc.
+#' @param font.size Plot title font size. Y axis title will be 3/4 of this value.
+#'  x axis labels will be 1/2 of this value.
+#' @param pt.size Integer value choosing point size.
+#' @param plot.bar logical. if TRUE boxlot will be added to plot.
+#' @param plot.boxplot logical. if TRUE boxplot will be added to plot.
+#' @param plot.mean logical. if TRUE horizontal line indicating mean will be plotted.
+#' @param plot.se.of.mean logical. if TRUE standard error of the mean be plotted.
+#' @param axis.text.x Angle of labels on x axis. Integer value wrapping around 360 degrees.
+#' @param chosen.theme One value from "bw", "void", "light", "dark", "minimal", "classic".
+#' @examples
+#' # Load flowjotter's example dataset that is loaded in app by default
+#' data(flowjotter_example)
+#'
+#' # Ensure the first columns is titled "Samples"
+#' flowjotter_example <- dplyr::rename(flowjotter_example, `Samples` = 1)
+#'
+#' # Remove empty columns
+#' flowjotter_example <- dplyr::select(flowjotter_example, dplyr::where(~ !all(is.na(.x))))
+#'
+#' # Use check_plotrow to filter on last row.
+#' flowjotter_example <- check_plotrow(xs = flowjotter_example, sheet = "CD4")
+#'
+#' # Use clean_input_data to prepare for plotting, and grouping samples.
+#' flowjotter_example <- clean_input_data(flowjotter_example)
+#'
+#' # Plot data
+#' fj_plot(flowjotter_example[,1:2])
+#' @export
+fj_plot <- function(
     tempData = NULL,
-    label = "",
     jitter_width = 0.1,
     jotter = TRUE,
-    MFIlogScale = FALSE,
+    # MFIlogScale = FALSE,
     colours = "Set1",
     font.size = 18,
     pt.size = 3,
@@ -12,11 +52,12 @@ create_single_plot <- function(
     plot.mean = FALSE,
     plot.se.of.mean = FALSE,
     axis.text.x = 45,
-    chosen.theme = "bw",
-    samples_var = "Samples",
-    se_var = "se") {
+    chosen.theme = "bw") {
   # shiny::req(!is.null(tempData))
   error_columns <- NULL
+  samples_var   <- colnames(tempData)[1]
+  label         <- colnames(tempData)[2]
+  se_var        <- "se"
 
   # Stop ggplot re-ordering Samples -----------------------------------------
   tempData$Samples <- factor(tempData$Samples, levels = unique(tempData$Samples))

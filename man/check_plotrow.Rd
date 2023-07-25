@@ -2,7 +2,7 @@
 % Please edit documentation in R/check_plotrow.R
 \name{check_plotrow}
 \alias{check_plotrow}
-\title{Keep or Remove Columns}
+\title{Keep or Remove Columns based upon custom flowjotter "plot" row that may/may not exist.}
 \usage{
 check_plotrow(xs = NULL, sheet = NULL)
 }

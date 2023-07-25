@@ -202,12 +202,12 @@ flowjotter_server <- shiny::shinyServer(function(input, output, session) {
   #
   #         shiny::incProgress(1 / (ncol(ggplotAllData) + 1), detail = paste("Plotting", label))
   #
-  #         g[[plot_n]] <- create_single_plot(
+  #         g[[plot_n]] <- fj_plot(
   #           tempData        = plot_data_temp,
-  #           label           = label,
+  #           # label           = label,
   #           jitter_width    = ifelse(input$jitter, 0.1, 0),
   #           jotter          = input$jotter,
-  #           MFIlogScale     = input$MFI_logscale,
+  #           # MFIlogScale     = input$MFI_logscale,
   #           colours         = input$colour_palette_picker,
   #           font.size       = input$font_size,
   #           pt.size         = input$pt_size,
@@ -258,9 +258,9 @@ flowjotter_server <- shiny::shinyServer(function(input, output, session) {
       plot_data_temp <- dplyr::select(ggplotAllData, c(`samples_var`, !!selected_plot))
 
       return(
-        create_single_plot(
+        fj_plot(
           tempData        = plot_data_temp,
-          label           = selected_plot,
+          # label           = selected_plot,
           jitter_width    = ifelse(input$jitter, 0.1, 0),
           jotter          = input$jotter,
           # MFIlogScale     = input$MFI_logscale,
@@ -354,12 +354,12 @@ flowjotter_server <- shiny::shinyServer(function(input, output, session) {
         label <- colnames(plot_data_temp)[2]
         plot_n <- i - 1
 
-        g[[plot_n]] <- create_single_plot(
+        g[[plot_n]] <- fj_plot(
           tempData        = plot_data_temp,
-          label           = label,
+          # label           = label,
           jitter_width    = ifelse(input$jitter, 0.1, 0),
           jotter          = input$jotter,
-          MFIlogScale     = input$MFI_logscale,
+          # MFIlogScale     = input$MFI_logscale,
           colours         = input$colour_palette_picker,
           font.size       = input$font_size,
           pt.size         = input$pt_size,
@@ -416,12 +416,12 @@ flowjotter_server <- shiny::shinyServer(function(input, output, session) {
       ggplotAllData <- clean_input_data(inputData()[["data"]])
       tempData <- ggplotAllData[, c("Samples", input$choose_graph)]
 
-      g_single <- create_single_plot(
+      g_single <- fj_plot(
         tempData        = tempData,
-        label           = input$choose_graph,
+        # label           = input$choose_graph,
         jitter_width    = ifelse(input$jitter, 0.1, 0),
         jotter          = input$jotter,
-        MFIlogScale     = input$MFI_logscale,
+        # MFIlogScale     = input$MFI_logscale,
         colours         = input$colour_palette_picker,
         font.size       = input$font_size,
         pt.size         = input$pt_size,
@@ -538,12 +538,12 @@ flowjotter_server <- shiny::shinyServer(function(input, output, session) {
               detail = label
             )
 
-            g[[plot_n]] <- create_single_plot(
+            g[[plot_n]] <- fj_plot(
               tempData        = plot_data_temp,
-              label           = label,
+              # label           = label,
               jitter_width    = ifelse(input$jitter, 0.1, 0),
               jotter          = input$jotter,
-              MFIlogScale     = input$MFI_logscale,
+              # MFIlogScale     = input$MFI_logscale,
               colours         = input$colour_palette_picker,
               font.size       = input$font_size,
               pt.size         = input$pt_size,

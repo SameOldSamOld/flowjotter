@@ -1,4 +1,4 @@
-#' Keep or Remove Columns
+#' Keep or Remove Columns based upon custom flowjotter "plot" row that may/may not exist.
 #'
 #' Check if the final row of `xs` contains optional "plot" filter, and apply specified filters
 #'   if so. The final row (as labelled "plot" in the "Samples" column) should contains "y" or "n"

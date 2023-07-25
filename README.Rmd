@@ -26,7 +26,7 @@ Flowjotter also features extremely fast conversion to .pzfx Prism file format fo
 
 ![The flowjotter UI](inst/logos/flowjotter_app.png)
 
-## Installation
+# Installation
 
 You can install the development version of flowjotter from [GitHub](https://github.com/) with:
 ```
@@ -36,48 +36,47 @@ if(!require(devtools)) {
 devtools::install_github("SameOldSamOld/flowjotter")
 ```
 
-## Running flowjotter
+# Running flowjotter
 
 This is a basic example which shows you how to use the shiny app:
 
 ```
-## Load Package
+# Load Package
 library(flowjotter)
 
-## Run shiny app
+# Run shiny app
 flowjotter()
 ```
 
-## Usage
+# Usage
 
 ### Choosing Graph types
 
-Graph type is decided by the first character of the column title
+Graph type is decided by the first character of the column title:
 
-% = Percentage Graph
+* % = Percentage Graph
 
-N = Number Graph
+* N = Number Graph
 
-M = MFI Plot
+* M = MFI Plot
 
-Red columns highlight columns not starting with `%/N/M`
+Red columns in the 'Info Page' table viewer highlight columns not starting with "%", "N", or "M".
 
-Column names must be unique
+Column names must be unique.
 
 ### Choosing Groups
 
-The left-most column ('Samples') dictates groups for samples
+The left-most column ('Samples') dictates groups for samples.
 
-Everything before the first underscore becomes grouped
+Everything before the first underscore (_) becomes grouped.
 
 There is no limit on the number of groups
 
-
-## FAQ
+# FAQ
 
 ### Is there an example of how to setup an Excel file?
 
-A typical Excel counts layout can be read in /data/ with base::load()
+A typical Excel counts layout can be read in /data/ with base::load(), or downloaded in the flowjotter app Info Page.
 
 ### Can my excel file contain multiple sheets?
 
@@ -93,10 +92,10 @@ No:
 
   * If multiple sheets are encountered, you may reach a warning if not correctly formatted.
 
-### Why are my images so squished?
+### Why are my images squished?
 
-You need to increase the 'Height px' of your image
+You may need to increase the 'Height px' or 'Width px' of your image
 
-### My groups are getting oversplit into multiple groups
+### Why are my groups getting oversplitting into multiple groups?
 
-Carefully read the figure legend, there may be a tiny typo
+Carefully read the figure legend, there is most likely a tiny typo in your Samples column.

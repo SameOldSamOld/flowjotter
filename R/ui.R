@@ -13,6 +13,7 @@ flowjotter_ui <- shiny::sidebarLayout(
       # src = system.file("logos/flowj_otter_lightblue.jpg", package = "flowjotter"),
       # src = company_logo(),
       src = "logos/flowj_otter_lightblue.jpg",
+      # src = "flowj_otter_lightblue.jpg",
       width = "100%", height = "100%", align = "margin-left"),
     htmltools::tags$figcaption(htmltools::HTML("<em>Flow Jotter v1.0.0</em>"), align = "right", alt = "By my friend Dime :)"),
     shiny::fileInput(
@@ -290,6 +291,7 @@ flowjotter_ui <- shiny::sidebarLayout(
         htmltools::tags$div(htmltools::tags$ul(htmltools::tags$li(
           htmltools::a(
             href = "logos/flowjotter_example_data.xlsx",
+            # href = "flowjotter_example_data.xlsx",
             "A typical Excel counts layout can be found above or downloaded here",
             download = NA, target = "_blank"
           )

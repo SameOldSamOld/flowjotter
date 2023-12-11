@@ -161,7 +161,7 @@ fj_plot <- function(
       )
 
     label <- paste0("Percentage", substr(label, 2, 1000000L))
-  } else if (substr(label, 1, 1) == "N") {
+  } else if (toupper(substr(label, 1, 1)) == "N") {
     # Create Number plot
 
     g_output <- g_output +
@@ -170,7 +170,7 @@ fj_plot <- function(
         limits = c(0, NA),
         expand = ggplot2::expansion(mult = c(0, .1))
       )
-  } else if (substr(label, 1, 1) == "M") {
+  } else if (toupper(substr(label, 1, 1)) == "M") {
     # Create an MFI plot
     ## NB::Stopped doing this because scale_y_flowjo_biexp did not work with
     ##   histograms, crashed app and caused massive slowdowns

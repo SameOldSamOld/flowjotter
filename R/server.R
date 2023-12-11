@@ -451,9 +451,12 @@ flowjotter_server <- shiny::shinyServer(function(input, output, session) {
       inFile <- input$file1
 
       if (is.null(inFile)) {
-        myfile <- "example_data.pzfx"
+        # myfile <- "example_data.pzfx"
+        # 7.Dec.2023 changed the file format to .prism for latest prism format
+        myfile <- "example_data.prism"
       } else {
-        myfile <- paste0(tools::file_path_sans_ext(inFile$name), ".pzfx")
+        # myfile <- paste0(tools::file_path_sans_ext(inFile$name), ".pzfx")
+        myfile <- paste0(tools::file_path_sans_ext(inFile$name), ".prism")
       }
       myfile
     },

@@ -6,15 +6,16 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
-The objective of flowjotter is to be a time-saving tool for researchers
-working with High Dimensional Flow Cytometry data.
+Flowjotter is a time-saving tool for researchers working with High
+Dimensional Flow Cytometry data.
 
-Flowjotter is useful for quick, automated plotting of Cytometry data
-copied from the FlowJo data export table into excel files.
+- Useful for quick, automated plotting of Cytometry data from the FlowJo
+  data export table exported into excel files.
 
-Flowjotter also features extremely fast conversion to .pzfx Prism file
-format for users who would prefer to make their graphs or stats in
-Prism.
+- Extremely fast conversion to Prism file format for users who would
+  prefer to make their graphs or statatistics in Prism (.prism files
+  require Prism 10). If you have an earlier version of Prism, you can
+  manually correct the file format to .pzfx
 
 <figure>
 <img src="inst/logos/flowjotter_app.png" alt="The flowjotter UI" />
@@ -30,6 +31,8 @@ You can install the development version of flowjotter from
       install.packages("devtools")
     } 
     devtools::install_github("SameOldSamOld/flowjotter")
+
+    .rs.restartR()
 
 # Running flowjotter
 

@@ -15,7 +15,8 @@ flowjotter_ui <- shiny::sidebarLayout(
       src = "logos/flowj_otter_lightblue.jpg",
       # src = "flowj_otter_lightblue.jpg",
       width = "100%", height = "100%", align = "margin-left"),
-    htmltools::tags$figcaption(htmltools::HTML("<em>Flow Jotter v1.0.0</em>"), align = "right", alt = "By my friend Dime :)"),
+    htmltools::tags$figcaption(htmltools::HTML("<em>Flow Jotter v1.0.0</em>"),
+                               align = "right", alt = "By my friend Dime :)"),
     shiny::fileInput(
       inputId = "file1",
       label   = "Choose Excel file",

@@ -22,7 +22,7 @@ Flowjotter is a time-saving tool for researchers working with High Dimensional F
 
 * Useful for quick, automated plotting of Cytometry data from the FlowJo data export table exported into excel files. 
 
-* Extremely fast conversion to Prism file format for users who would prefer to make their graphs or statatistics in Prism (.prism files require Prism 10). If you have an earlier version of Prism, you can manually correct the file format to .pzfx
+* Extremely fast conversion to Prism file format for users who would prefer to make their graphs or statistics in Prism (.prism files require Prism 10). If you have an earlier version of Prism, you can manually correct the file format to .pzfx
 
 ![The flowjotter UI](inst/logos/flowjotter_app.png)
 
